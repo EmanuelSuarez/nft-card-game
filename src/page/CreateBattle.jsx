@@ -7,9 +7,17 @@ import styles from '../styles';
 import { useGlobalContext } from '../context';
 
 const CreateBattle = () => {
-  const { contract, battleName, setBattleName } = useGlobalContext();
-  const [ waitBatle, setWaitBatle ] = useState(true);
+  const { contract, battleName, setBattleName, gameData } = useGlobalContext();
+  const [ waitBatle, setWaitBatle ] = useState(false);
   const navigate = useNavigate();
+
+
+  //check if there is a pending battle for the wallet connected
+  useEffect(() => {
+    if(gameData?.activeBattle?.battleStatus === 0) {
+      setWaitBatle(true);
+    };
+  }, [gameData])
 
   const handleClick = async () => {
     if(!battleName || !battleName.trim()) return null;
@@ -17,7 +25,7 @@ const CreateBattle = () => {
     setWaitBatle(true)
 
     try {
-      await contract.CreateBattle(battleName);
+      await contract.createBattle(battleName);
     } catch (error) {
       console.log(error);
     }
